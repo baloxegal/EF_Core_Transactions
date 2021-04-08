@@ -4,28 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EF_Core_Introduction
+namespace EF_Core_Transactions
 {
     class Order
     {
         public int Id { get; set; }
-        public virtual Person Customer { get; set; }
+        public virtual int CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
         public DateTime Date { get; set; }
         public virtual List<Book> Purchases { get; set; }
+        public int? PaymentId { get; set; }
+        public Payment Payment { get; set; }
 
         public Order()
         {
                 
         }
 
-        public Order(Person customer, DateTime date, List<Book> purchases)
+        public Order(Customer customer, DateTime date, List<Book> purchases)
         {
             Customer = customer;
             Date = date;
             Purchases = purchases;  
         }
 
-        public Order(Person customer, DateTime date, Book book)
+        public Order(Customer customer, DateTime date, Book book)
         {
             Customer = customer;
             Date = date;

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace EF_Core_Introduction
+namespace EF_Core_Transactions
 {
     class Author : Person
     {

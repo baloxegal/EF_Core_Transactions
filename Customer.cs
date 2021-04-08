@@ -5,15 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EF_Core_Introduction
+namespace EF_Core_Transactions
 {
     class Customer : Person
-    {        
-        [MaxLength(200)]
+    {   
         public string Address { get; set; }
-        [MaxLength(20)]
         public string Card { get; set; }
-        public virtual List<Order> Purchases { get; set; }
+        //public virtual List<Order> Purchases { get; set; }
 
         public Customer()
         {

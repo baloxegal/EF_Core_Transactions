@@ -6,19 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EF_Core_Introduction
+namespace EF_Core_Transactions
 {
     class Book
     {
         public int Id { get; set; }
-        [Required]
-        [MaxLength (200)]
         public string Title { get; set; }
-        [Required]
-        [MaxLength(500)]
         public string Description { get; set; }
-        [Required]
-        [MaxLength(500)]
         public string Cover { get; set; }
         public virtual List<Author> Authors { get; set; }
         //public int AuthorId { get; set; }

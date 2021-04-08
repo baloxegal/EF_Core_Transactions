@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EF_Core_Introduction
+namespace EF_Core_Transactions
 {
     abstract class Person
     {
