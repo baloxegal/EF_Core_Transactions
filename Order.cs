@@ -13,8 +13,8 @@ namespace EF_Core_Transactions
         public virtual Customer Customer { get; set; }
         public DateTime Date { get; set; }
         public virtual List<Book> Purchases { get; set; }
-        public int? PaymentId { get; set; }
-        public Payment Payment { get; set; }
+        public virtual int? PaymentId { get; set; }
+        public virtual Payment Payment { get; set; }
 
         public Order()
         {

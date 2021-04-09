@@ -39,7 +39,7 @@ namespace EF_Core_Transactions
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=LibrarySeeding;Trusted_Connection=True;");
+            optionsBuilder/*.UseLazyLoadingProxies()*/.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=LibrarySeeding;Trusted_Connection=True;");
             
             //WARNING IF INCLUDE IGNORED
 

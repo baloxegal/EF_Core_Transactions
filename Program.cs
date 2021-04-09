@@ -45,6 +45,7 @@ namespace EF_Core_Transactions
             string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             
             var options = new DbContextOptionsBuilder<LibraryContext>()
+                //.UseLazyLoadingProxies()
                 .UseSqlServer(connectionString)
                 .Options;
             using(var libraryContext = new LibraryContext(options))
@@ -98,7 +99,8 @@ namespace EF_Core_Transactions
                     }
                     catch (Exception e)
                     {
-                        //Why AUTO ROLLBACK?                        
+                        //Why AUTO ROLLBACK?
+                        transactions.Rollback();
                         Console.WriteLine(e.Message);
                     }
                 }
@@ -138,14 +140,101 @@ namespace EF_Core_Transactions
                 libraryContext.Entry(orderPaym2).Reference("Payment").Load();
                 Console.WriteLine($"Id={orderPaym2.Id}, Date={orderPaym2.Date}, Payment={orderPaym2.Payment.Type}, PaymentId={orderPaym2.Payment.Id}");
                 Console.WriteLine("===========================================");
-                
+
                 //EXPLICIT LOADING FOR COLECTIONS
-                
+
                 //var orderPaym3 = libraryContext.Orders.FirstOrDefault();
                 //libraryContext.Entry(orderPaym2).Collection("Payment").Load();
                 //Console.WriteLine($"Id={orderPaym2.Id}, Date={orderPaym2.Date}, Payment={orderPaym2.Payment.Type}, PaymentId={orderPaym2.Payment.Id}");
-                //Console.WriteLine("===========================================");                
+                //Console.WriteLine("===========================================");
+
+                //LAZY LOADING
+
+                var orderPaym3 = libraryContext.Orders.Where(o => o.Id == 2).FirstOrDefault();
+                Console.WriteLine($"Id={orderPaym3.Id}, Date={orderPaym3.Date}, Payment={orderPaym3.Payment.Type}, PaymentId={orderPaym3.Payment.Id}");
+                Console.WriteLine("===========================================");
+
+                ////JOIN
+
+                //var authorsFromOrders = libraryContext.Orders.Join(libraryContext.Books,
+                //    orderBook => orderBook.Id,
+                //    book => book.Id,
+                //    (b, a) => new {bookFromOrder = b.Id, bookAuthor = a.Id};
+
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    db.Companies.Add(new Company {Name = "Amdaris"});
+                    db.Companies.Add(new Company { Name = "Google" });
+                    db.Companies.Add(new Company { Name = "Microsoft" });
+                    db.SaveChanges();
+
+                    db.Users.Add(new User { Name = "Vasea", Age = 10, CompanyId = 1 });
+                    db.Users.Add(new User { Name = "Maxim", Age = 20, CompanyId = 1 });
+                    db.Users.Add(new User { Name = "Valentin", Age = 30, CompanyId = 1 });
+                    db.Users.Add(new User { Name = "Igor", Age = 30, CompanyId = 2 });
+                    db.Users.Add(new User { Name = "Serioja", Age = 40, CompanyId = 2 });
+                    db.Users.Add(new User { Name = "Petea", Age = 20, CompanyId = 2 });
+                    db.Users.Add(new User { Name = "Ghena", Age = 50, CompanyId = 3 });
+                    db.Users.Add(new User { Name = "Stiopa", Age = 60, CompanyId = 3 });
+                    db.SaveChanges();
+
+                    var users = db.Users.Join(db.Companies,
+                        u => u.CompanyId,
+                        c => c.Id,
+                        (u, c) => new
+                        {
+                            Name = u.Name,
+                            Company = c.Name,
+                            Age = u.Age
+                        });
+                    foreach (var u in users)
+                        Console.WriteLine($"{u.Name} ({u.Company}) - {u.Age}");
+
+                    //var users1 = db.Users.Join(db.Companies,
+                    //    u => u.CompanyId,
+                    //    c => c.Id,
+                    //    (u, c) => new
+                    //    {
+                    //        Name = u.Name,
+                    //        Company = c.Name,
+                    //    });
+                    //foreach (var u in users)
+                    //    Console.WriteLine($"{u.Name} ({u.Company}) - {u.Age}");
+                }
             }
+        }
+    }
+
+    public class Company
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+
+        public List<User> Users { get; set; } = new List<User>();
+    }
+
+    public class User
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+
+        public int CompanyId { get; set; }
+        public Company Company { get; set; }
+    }
+    public class ApplicationContext : DbContext
+    {
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<User> Users { get; set; }
+
+        public ApplicationContext()
+        {
+            Database.EnsureCreated();
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder/*.UseLazyLoadingProxies()*/.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=NewUserDataBase;Trusted_Connection=True;");
         }
     }
 }
